@@ -1,0 +1,1 @@
+I want to build a virtual Pokemon Deck where I can see my cards and learn more about them.
