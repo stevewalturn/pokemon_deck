@@ -1,7 +1,7 @@
 {
   "package_name": "com.walturn_tech.pokemon_deck",
-  "project_description": "A Flutter project using the Stacked architecture, featuring routing, dependency injection, and dialog/bottom sheet management.",
-  "architecture_overview": "The application follows the Stacked architecture with separate folders for app setup, features, UI components, and utilities. It uses Stacked for state management, routing, and dependency injection.",
+  "project_description": "The Pokemon Deck application is a Flutter project that allows users to manage their collection of Pokemon trading cards. It features a home screen displaying the user's card collection, as well as the ability to view detailed information about individual cards, and to interact with them through various actions such as adding, removing, and marking favorites. The app also includes UI components for displaying custom dialogs and bottom sheets, providing a rich and engaging user experience.",
+  "architecture_overview": "The application follows the Stacked architecture, which promotes separation of concerns and testability. It uses Stacked for state management, routing, and dependency injection. The codebase is organized into several key folders, including 'features' for core application screens and functionality, 'services' for business logic and data management, 'ui' for reusable UI components, and 'models' for data entities. This structure allows for easy maintenance, scalability, and integration of new features.",
   "files": [
     {
       "name": "lib/app/app.dart",
@@ -113,6 +113,640 @@
         "package:my_app/app/app.locator.dart",
         "package:my_app/features/app/app_view.dart"
       ]
+    },
+    {
+      "name": "lib/features/home/widgets/pokemon_card_tile.dart",
+      "description": "The `PokemonCardTile` class is responsible for rendering a single Pokemon card in a list or grid view. It provides a visual representation of the card's key details, such as the image, name, type, and HP, and allows users to interact with the card through tapping or deleting it.",
+      "class_diagram": "@startuml\nclass PokemonCardTile {\n  -PokemonCard card\n  -VoidCallback onTap\n  -VoidCallback onDelete\n  +Widget build(BuildContext context)\n}\n@enduml",
+      "methods": [
+        {
+          "name": "build",
+          "description": "Constructs the visual representation of the Pokemon card, including the image, name, type, and HP, as well as a delete button.",
+          "parameters": [
+            "BuildContext context"
+          ],
+          "return_type": "Widget"
+        }
+      ],
+      "dependencies": [
+        "package:flutter/material.dart",
+        "package:pokemon_deck/models/pokemon_card.dart",
+        "package:pokemon_deck/ui/common/app_colors.dart",
+        "package:pokemon_deck/ui/common/ui_helpers.dart"
+      ]
+    },
+    {
+      "name": "lib/features/home/home_repository.dart",
+      "description": "The `HomeRepository` class is responsible for managing the user's Pokemon card collection. It serves as an intermediary between the UI layer and the underlying `PokemonService` that handles the actual card data retrieval and manipulation.",
+      "class_diagram": "@startuml\nclass HomeRepository {\n  +Future<List<PokemonCard>> getCards()\n  +Future<void> removeCard(String id)\n}\n\nclass PokemonService {\n  +Future<List<PokemonCard>> getCards()\n  +Future<void> removeCard(String id)\n}\n\nHomeRepository ---> PokemonService\n@enduml",
+      "methods": [
+        {
+          "name": "getCards",
+          "description": "Retrieves the user's collection of Pokemon cards from the `PokemonService`.",
+          "parameters": null,
+          "return_type": "Future<List<PokemonCard>>"
+        },
+        {
+          "name": "removeCard",
+          "description": "Removes a specific Pokemon card from the user's collection by invoking the `removeCard` method in the `PokemonService`.",
+          "parameters": [
+            "String id"
+          ],
+          "return_type": "Future<void>"
+        }
+      ],
+      "dependencies": [
+        "pokemon_deck/app/app.locator.dart",
+        "pokemon_deck/models/pokemon_card.dart",
+        "pokemon_deck/services/pokemon_service.dart"
+      ]
+    },
+    {
+      "name": "lib/features/home/widgets/pokemon_card_grid.dart",
+      "description": "The PokemonCardGrid widget is responsible for displaying a grid of Pokemon cards on the home screen of the Pokemon Deck application. It provides a way to visualize and interact with the user's collection of Pokemon cards.",
+      "class_diagram": "@startuml\nclass PokemonCardGrid {\n  + List<PokemonCard> cards\n  + Function(String) onCardTap\n  + Function(String) onCardDelete\n  + build(BuildContext): Widget\n}\n\nclass PokemonCardTile {\n  + PokemonCard card\n  + Function() onTap\n  + Function() onDelete\n  + build(BuildContext): Widget\n}\n@enduml",
+      "methods": [
+        {
+          "name": "build",
+          "description": "Builds the grid of Pokemon cards using the provided list of PokemonCard instances.",
+          "parameters": [
+            "BuildContext"
+          ],
+          "return_type": "Widget"
+        }
+      ],
+      "dependencies": [
+        "package:flutter/material.dart",
+        "lib/features/home/widgets/pokemon_card_tile.dart",
+        "lib/models/pokemon_card.dart"
+      ]
+    },
+    {
+      "name": "lib/app/app.locator.dart",
+      "description": "This file is responsible for setting up and managing the dependency injection system in the application using the Stacked architecture. It is a key part of the application's overall service locator and dependency management.",
+      "class_diagram": "@startuml\nclass StackedLocator {\n  +static instance: StackedLocator\n  +registerLazySingleton(creator: Func<T>): void\n  +registerEnvironment(environment: String, environmentFilter: EnvironmentFilter): void\n}\n\nclass BottomSheetService {\n}\n\nclass DialogService {\n}\n\nclass NavigationService {\n}\n\nStackedLocator --> BottomSheetService\nStackedLocator --> DialogService\nStackedLocator --> NavigationService\n@enduml",
+      "methods": [
+        {
+          "name": "setupLocator",
+          "description": "This method is responsible for registering the various services and dependencies used throughout the application with the Stacked Locator. It allows for the environment to be configured as well.",
+          "parameters": [
+            "environment: String",
+            "environmentFilter: EnvironmentFilter"
+          ],
+          "return_type": "Future<void>"
+        }
+      ],
+      "dependencies": [
+        "stacked_services/src/bottom_sheet/bottom_sheet_service.dart",
+        "stacked_services/src/dialog/dialog_service.dart",
+        "stacked_services/src/navigation/navigation_service.dart",
+        "stacked_shared/stacked_shared.dart"
+      ]
+    },
+    {
+      "name": "lib/models/pokemon_card.dart",
+      "description": "This file defines a `PokemonCard` class that represents a trading card for a Pokemon. The class encapsulates the key attributes of a Pokemon card, including its ID, name, image URL, type, rarity, description, HP, attacks, weakness, and resistance. The class provides functionality for creating, serializing, and deserializing Pokemon card data, making it a central component for managing and working with Pokemon card information in the application.",
+      "class_diagram": "@startuml\nclass PokemonCard {\n  +String id\n  +String name\n  +String imageUrl\n  +String type\n  +String rarity\n  +String description\n  +int hp\n  +List<String> attacks\n  +String weakness\n  +String resistance\n  +PokemonCard.fromJson(Map<String, dynamic>)\n  +Map<String, dynamic> toJson()\n}\n@enduml",
+      "methods": [
+        {
+          "name": "PokemonCard",
+          "description": "Constructor for creating a new `PokemonCard` instance with the required attributes.",
+          "parameters": [
+            "id",
+            "name",
+            "imageUrl",
+            "type",
+            "rarity",
+            "description",
+            "hp",
+            "attacks",
+            "weakness",
+            "resistance"
+          ],
+          "return_type": null
+        },
+        {
+          "name": "fromJson",
+          "description": "Factory constructor that creates a `PokemonCard` instance from a JSON map.",
+          "parameters": [
+            "json"
+          ],
+          "return_type": "PokemonCard"
+        },
+        {
+          "name": "toJson",
+          "description": "Converts the `PokemonCard` instance to a JSON map.",
+          "parameters": null,
+          "return_type": "Map<String, dynamic>"
+        }
+      ],
+      "dependencies": [
+        "package:equatable/equatable.dart"
+      ]
+    },
+    {
+      "name": "lib/services/pokemon_service.dart",
+      "description": "The PokemonService class is responsible for managing the Pokemon card data in the application. It provides the core functionality for loading, fetching, adding, and removing Pokemon cards.",
+      "class_diagram": "@startuml\nclass PokemonService {\n  - _cards: List<PokemonCard>\n  + getCards(): Future<List<PokemonCard>>\n  + getCardById(id: String): Future<PokemonCard>\n  + addCard(card: PokemonCard): Future<void>\n  + removeCard(id: String): Future<void>\n}\n@enduml",
+      "methods": [
+        {
+          "name": "getCards",
+          "description": "Retrieves the list of all Pokemon cards available in the application.",
+          "parameters": null,
+          "return_type": "Future<List<PokemonCard>>"
+        },
+        {
+          "name": "getCardById",
+          "description": "Fetches a specific Pokemon card by its unique identifier.",
+          "parameters": [
+            "id: String"
+          ],
+          "return_type": "Future<PokemonCard>"
+        },
+        {
+          "name": "addCard",
+          "description": "Adds a new Pokemon card to the collection.",
+          "parameters": [
+            "card: PokemonCard"
+          ],
+          "return_type": "Future<void>"
+        },
+        {
+          "name": "removeCard",
+          "description": "Removes a Pokemon card from the collection by its unique identifier.",
+          "parameters": [
+            "id: String"
+          ],
+          "return_type": "Future<void>"
+        }
+      ],
+      "dependencies": [
+        "pokemon_deck/models/pokemon_card.dart"
+      ]
+    },
+    {
+      "name": "lib/app/app.router.dart",
+      "description": "This Dart file is responsible for managing the navigation and routing within the Flutter application. It defines the available routes, the corresponding views, and provides helper methods to navigate between them.",
+      "class_diagram": "@startuml\n\nclass Routes {\n    + static const homeView: String\n    + static const startupView: String\n    + static const all: Set<String>\n}\n\nclass StackedRouter {\n    + final _routes: List<RouteDef>\n    + final _pagesMap: Map<Type, StackedRouteFactory>\n    + get routes(): List<RouteDef>\n    + get pagesMap(): Map<Type, StackedRouteFactory>\n}\n\nclass NavigatorStateExtension {\n    + Future<dynamic> navigateToHomeView()\n    + Future<dynamic> navigateToStartupView()\n    + Future<dynamic> replaceWithHomeView()\n    + Future<dynamic> replaceWithStartupView()\n}\n\n@enduml",
+      "methods": [
+        {
+          "name": "navigateToHomeView",
+          "description": "Navigates to the HomeView screen of the application.",
+          "parameters": [
+            "int?",
+            "bool",
+            "Map<String, String>?",
+            "Widget Function(BuildContext, Animation<double>, Animation<double>, Widget)?"
+          ],
+          "return_type": "Future<dynamic>"
+        },
+        {
+          "name": "navigateToStartupView",
+          "description": "Navigates to the StartupView screen of the application.",
+          "parameters": [
+            "int?",
+            "bool",
+            "Map<String, String>?",
+            "Widget Function(BuildContext, Animation<double>, Animation<double>, Widget)?"
+          ],
+          "return_type": "Future<dynamic>"
+        },
+        {
+          "name": "replaceWithHomeView",
+          "description": "Replaces the current screen with the HomeView screen of the application.",
+          "parameters": [
+            "int?",
+            "bool",
+            "Map<String, String>?",
+            "Widget Function(BuildContext, Animation<double>, Animation<double>, Widget)?"
+          ],
+          "return_type": "Future<dynamic>"
+        },
+        {
+          "name": "replaceWithStartupView",
+          "description": "Replaces the current screen with the StartupView screen of the application.",
+          "parameters": [
+            "int?",
+            "bool",
+            "Map<String, String>?",
+            "Widget Function(BuildContext, Animation<double>, Animation<double>, Widget)?"
+          ],
+          "return_type": "Future<dynamic>"
+        }
+      ],
+      "dependencies": [
+        "flutter/material.dart",
+        "pokemon_deck/features/home/home_view.dart",
+        "pokemon_deck/features/startup/startup_view.dart",
+        "stacked/stacked.dart",
+        "stacked_services/stacked_services.dart"
+      ]
+    },
+    {
+      "name": "lib/ui/common/app_colors.dart",
+      "description": "This Dart file defines a set of constant color values that are used throughout the application's user interface. It provides a centralized location to manage and access the application's color palette, promoting consistency and maintainability.",
+      "class_diagram": "",
+      "methods": [],
+      "dependencies": [
+        "package:flutter/material.dart"
+      ]
+    },
+    {
+      "name": "lib/ui/common/ui_helpers.dart",
+      "description": "This file contains a set of helper functions and constant values that provide common UI utilities and layout helpers for a Flutter application. It serves as a central repository for reusable UI-related functionality.",
+      "class_diagram": "@startuml\nclass UIHelpers {\n  + static const double _tinySize\n  + static const double _smallSize\n  + static const double _mediumSize\n  + static const double _largeSize\n  + static const double _massiveSize\n  \n  + static const Widget horizontalSpaceTiny\n  + static const Widget horizontalSpaceSmall\n  + static const Widget horizontalSpaceMedium\n  + static const Widget horizontalSpaceLarge\n  \n  + static const Widget verticalSpaceTiny\n  + static const Widget verticalSpaceSmall\n  + static const Widget verticalSpaceMedium\n  + static const Widget verticalSpaceLarge\n  + static const Widget verticalSpaceMassive\n  \n  + static Widget spacedDivider\n  + static Widget verticalSpace(double height)\n  + static double screenWidth(BuildContext context)\n  + static double screenHeight(BuildContext context)\n  + static double screenHeightFraction(BuildContext context, {int dividedBy = 1, double offsetBy = 0, double max = 3000})\n  + static double screenWidthFraction(BuildContext context, {int dividedBy = 1, double offsetBy = 0, double max = 3000})\n  + static double halfScreenWidth(BuildContext context)\n  + static double thirdScreenWidth(BuildContext context)\n  + static double quarterScreenWidth(BuildContext context)\n  + static double getResponsiveHorizontalSpaceMedium(BuildContext context)\n  + static double getResponsiveSmallFontSize(BuildContext context)\n  + static double getResponsiveMediumFontSize(BuildContext context)\n  + static double getResponsiveLargeFontSize(BuildContext context)\n  + static double getResponsiveExtraLargeFontSize(BuildContext context)\n  + static double getResponsiveMassiveFontSize(BuildContext context)\n  + static double getResponsiveFontSize(BuildContext context, {double? fontSize, double? max})\n}\n@enduml",
+      "methods": [
+        {
+          "name": "verticalSpace",
+          "description": "Returns a vertical SizedBox with the specified height.",
+          "parameters": [
+            "double height"
+          ],
+          "return_type": "Widget"
+        },
+        {
+          "name": "screenWidth",
+          "description": "Returns the width of the current screen in the given BuildContext.",
+          "parameters": [
+            "BuildContext context"
+          ],
+          "return_type": "double"
+        },
+        {
+          "name": "screenHeight",
+          "description": "Returns the height of the current screen in the given BuildContext.",
+          "parameters": [
+            "BuildContext context"
+          ],
+          "return_type": "double"
+        },
+        {
+          "name": "screenHeightFraction",
+          "description": "Returns the height of the current screen as a fraction of the total screen height, with optional offset and maximum value.",
+          "parameters": [
+            "BuildContext context",
+            "int dividedBy = 1",
+            "double offsetBy = 0",
+            "double max = 3000"
+          ],
+          "return_type": "double"
+        },
+        {
+          "name": "screenWidthFraction",
+          "description": "Returns the width of the current screen as a fraction of the total screen width, with optional offset and maximum value.",
+          "parameters": [
+            "BuildContext context",
+            "int dividedBy = 1",
+            "double offsetBy = 0",
+            "double max = 3000"
+          ],
+          "return_type": "double"
+        },
+        {
+          "name": "halfScreenWidth",
+          "description": "Returns half the width of the current screen.",
+          "parameters": [
+            "BuildContext context"
+          ],
+          "return_type": "double"
+        },
+        {
+          "name": "thirdScreenWidth",
+          "description": "Returns one-third the width of the current screen.",
+          "parameters": [
+            "BuildContext context"
+          ],
+          "return_type": "double"
+        },
+        {
+          "name": "quarterScreenWidth",
+          "description": "Returns one-quarter the width of the current screen.",
+          "parameters": [
+            "BuildContext context"
+          ],
+          "return_type": "double"
+        },
+        {
+          "name": "getResponsiveHorizontalSpaceMedium",
+          "description": "Returns a responsive horizontal spacing value based on the screen width.",
+          "parameters": [
+            "BuildContext context"
+          ],
+          "return_type": "double"
+        },
+        {
+          "name": "getResponsiveSmallFontSize",
+          "description": "Returns a responsive font size based on the screen width, with a maximum value.",
+          "parameters": [
+            "BuildContext context"
+          ],
+          "return_type": "double"
+        },
+        {
+          "name": "getResponsiveMediumFontSize",
+          "description": "Returns a responsive font size based on the screen width, with a maximum value.",
+          "parameters": [
+            "BuildContext context"
+          ],
+          "return_type": "double"
+        },
+        {
+          "name": "getResponsiveLargeFontSize",
+          "description": "Returns a responsive font size based on the screen width, with a maximum value.",
+          "parameters": [
+            "BuildContext context"
+          ],
+          "return_type": "double"
+        },
+        {
+          "name": "getResponsiveExtraLargeFontSize",
+          "description": "Returns a responsive font size based on the screen width.",
+          "parameters": [
+            "BuildContext context"
+          ],
+          "return_type": "double"
+        },
+        {
+          "name": "getResponsiveMassiveFontSize",
+          "description": "Returns a responsive font size based on the screen width.",
+          "parameters": [
+            "BuildContext context"
+          ],
+          "return_type": "double"
+        },
+        {
+          "name": "getResponsiveFontSize",
+          "description": "Returns a responsive font size based on the screen width, with an optional maximum value.",
+          "parameters": [
+            "BuildContext context",
+            "double? fontSize",
+            "double? max"
+          ],
+          "return_type": "double"
+        }
+      ],
+      "dependencies": [
+        "dart:math",
+        "package:flutter/material.dart"
+      ]
+    },
+    {
+      "name": "lib/ui/bottom_sheets/notice/notice_sheet.dart",
+      "description": "The NoticeSheet file is responsible for displaying a bottom sheet modal with a notice or alert message to the user. It provides a simple and consistent way to present important information or notifications within the application.",
+      "class_diagram": "@startuml\nclass NoticeSheet {\n  -Function(SheetResponse)? completer\n  -SheetRequest request\n  +builder(BuildContext, NoticeSheetModel, Widget?)\n  +viewModelBuilder(BuildContext): NoticeSheetModel\n}\n@enduml",
+      "methods": [
+        {
+          "name": "builder",
+          "description": "Builds the UI for the notice bottom sheet, displaying the title and description provided in the SheetRequest.",
+          "parameters": [
+            "BuildContext",
+            "NoticeSheetModel",
+            "Widget?"
+          ],
+          "return_type": "Widget"
+        },
+        {
+          "name": "viewModelBuilder",
+          "description": "Initializes the NoticeSheetModel view model, which manages the state and logic for the notice bottom sheet.",
+          "parameters": [
+            "BuildContext"
+          ],
+          "return_type": "NoticeSheetModel"
+        }
+      ],
+      "dependencies": [
+        "package:flutter/material.dart",
+        "package:stacked/stacked.dart",
+        "package:stacked_services/stacked_services.dart",
+        "package:pokemon_deck/ui/bottom_sheets/notice/notice_sheet_model.dart",
+        "package:pokemon_deck/ui/common/app_colors.dart",
+        "package:pokemon_deck/ui/common/ui_helpers.dart"
+      ]
+    },
+    {
+      "name": "lib/ui/dialogs/info_alert/info_alert_dialog.dart",
+      "description": "This Dart file defines an `InfoAlertDialog` widget that provides a reusable alert dialog UI component for displaying informative messages to the user. It is part of the `pokemon_deck` application's UI layer.",
+      "class_diagram": "@startuml\nclass InfoAlertDialog extends StackedView<InfoAlertDialogModel> {\n  +InfoAlertDialog(request: DialogRequest, completer: Function(DialogResponse))\n  +builder(BuildContext, InfoAlertDialogModel, Widget?): Widget\n  +viewModelBuilder(BuildContext): InfoAlertDialogModel\n}\n\nclass InfoAlertDialogModel {\n}\n\nclass DialogRequest {\n  +title: String\n  +description: String\n}\n\nclass DialogResponse {\n  +confirmed: bool\n}\n@enduml",
+      "methods": [
+        {
+          "name": "InfoAlertDialog",
+          "description": "Constructor for the `InfoAlertDialog` widget. Takes a `DialogRequest` and a `completer` function as parameters.",
+          "parameters": [
+            "DialogRequest",
+            "Function(DialogResponse)"
+          ],
+          "return_type": null
+        },
+        {
+          "name": "builder",
+          "description": "Builds the UI for the `InfoAlertDialog` widget, using the provided `DialogRequest` and `InfoAlertDialogModel`.",
+          "parameters": [
+            "BuildContext",
+            "InfoAlertDialogModel",
+            "Widget?"
+          ],
+          "return_type": "Widget"
+        },
+        {
+          "name": "viewModelBuilder",
+          "description": "Creates an instance of the `InfoAlertDialogModel` view model for the `InfoAlertDialog` widget.",
+          "parameters": [
+            "BuildContext"
+          ],
+          "return_type": "InfoAlertDialogModel"
+        }
+      ],
+      "dependencies": [
+        "package:flutter/material.dart",
+        "package:stacked/stacked.dart",
+        "package:stacked_services/stacked_services.dart",
+        "package:pokemon_deck/ui/common/app_colors.dart",
+        "package:pokemon_deck/ui/common/ui_helpers.dart",
+        "package:pokemon_deck/ui/dialogs/info_alert/info_alert_dialog_model.dart"
+      ]
+    },
+    {
+      "name": "lib/ui/bottom_sheets/notice/notice_sheet_model.dart",
+      "description": "The NoticeSheetModel class is a view model that provides the core functionality for displaying a notice sheet in a Flutter application. It is responsible for managing the state and behavior of the notice sheet UI component.",
+      "class_diagram": "@startuml\nclass NoticeSheetModel {\n  +showNotice()\n  +hideNotice()\n  +toggleNotice()\n}\n@enduml",
+      "methods": [
+        {
+          "name": "showNotice",
+          "description": "Displays the notice sheet to the user.",
+          "parameters": null,
+          "return_type": "void"
+        },
+        {
+          "name": "hideNotice",
+          "description": "Hides the notice sheet from the user.",
+          "parameters": null,
+          "return_type": "void"
+        },
+        {
+          "name": "toggleNotice",
+          "description": "Toggles the visibility of the notice sheet, showing it if it's hidden and hiding it if it's shown.",
+          "parameters": null,
+          "return_type": "void"
+        }
+      ],
+      "dependencies": [
+        "package:stacked/stacked.dart"
+      ]
+    },
+    {
+      "name": "lib/app/app.dialogs.dart",
+      "description": "This file is responsible for managing the user interface dialogs and alerts used throughout the application. It provides a centralized way to register and configure various types of dialogs, making it easier to maintain and reuse them across the codebase.",
+      "class_diagram": "@startuml\nclass DialogService {\n  +registerCustomDialogBuilders(Map<DialogType, DialogBuilder> builders)\n}\n\nenum DialogType {\n  infoAlert\n}\n\ninterface DialogBuilder {\n  build(BuildContext context, DialogRequest request, DialogCompleter completer)\n}\n\nclass InfoAlertDialog implements DialogBuilder {\n  +build(BuildContext context, DialogRequest request, DialogCompleter completer)\n}\n\nDialogService ..> DialogBuilder\nDialogBuilder <|-- InfoAlertDialog\n@enduml",
+      "methods": [
+        {
+          "name": "setupDialogUi",
+          "description": "This method is responsible for registering the custom dialog builders with the DialogService. It defines the mapping between DialogType enum values and their corresponding DialogBuilder implementations.",
+          "parameters": null,
+          "return_type": "void"
+        }
+      ],
+      "dependencies": [
+        "package:stacked_services/stacked_services.dart",
+        "app.locator.dart",
+        "ui/dialogs/info_alert/info_alert_dialog.dart"
+      ]
+    },
+    {
+      "name": "lib/app/app.bottomsheets.dart",
+      "description": "This file is responsible for setting up and managing the bottom sheet UI in the application. It provides a centralized way to define and register different types of bottom sheets, making it easy to integrate them into the app's overall UI and user experience.",
+      "class_diagram": "@startuml\nclass BottomSheetType {\n  notice\n}\n\nclass BottomSheetService {\n  +setCustomSheetBuilders(builders: Map<BottomSheetType, SheetBuilder>)\n}\n\nclass NoticeSheet {\n  +NoticeSheet(request: SheetRequest, completer: SheetCompleter)\n}\n\nBottomSheetType -right-> BottomSheetService\nBottomSheetService --> NoticeSheet\n@enduml",
+      "methods": [
+        {
+          "name": "setupBottomSheetUi",
+          "description": "This method sets up the bottom sheet UI by registering custom sheet builders for different bottom sheet types. It is responsible for defining the mapping between bottom sheet types and their corresponding UI components.",
+          "parameters": [
+            "context",
+            "request",
+            "completer"
+          ],
+          "return_type": "void"
+        }
+      ],
+      "dependencies": [
+        "stacked_services/stacked_services.dart",
+        "app.locator.dart",
+        "../ui/bottom_sheets/notice/notice_sheet.dart"
+      ]
+    },
+    {
+      "name": "lib/features/card_detail/card_detail_viewmodel.dart",
+      "description": "The `CardDetailViewModel` class is responsible for managing the state and logic associated with displaying the details of a specific Pokemon card. It fetches the card data from the `PokemonService`, handles errors, and provides the necessary information to the UI layer.",
+      "class_diagram": "@startuml\nclass CardDetailViewModel {\n  -_pokemonService : PokemonService\n  -_dialogService : DialogService\n  -_card : PokemonCard\n  -_errorMessage : String\n  \n  +initialize(cardId : String) : Future<void>\n  +loadCard(cardId : String) : Future<void>\n  +get card : PokemonCard\n  +get errorMessage : String\n}\n\nCardDetailViewModel -down-> PokemonService\nCardDetailViewModel -down-> DialogService\nCardDetailViewModel -down-> PokemonCard\n@enduml",
+      "methods": [
+        {
+          "name": "initialize",
+          "description": "Initializes the `CardDetailViewModel` by loading the details of a specific Pokemon card based on the provided `cardId`.",
+          "parameters": [
+            "cardId : String"
+          ],
+          "return_type": "Future<void>"
+        },
+        {
+          "name": "loadCard",
+          "description": "Fetches the details of a Pokemon card from the `PokemonService` using the provided `cardId`. Sets the `_card` and `_errorMessage` properties accordingly.",
+          "parameters": [
+            "cardId : String"
+          ],
+          "return_type": "Future<void>"
+        },
+        {
+          "name": "get card",
+          "description": "Provides access to the `_card` property, which holds the details of the currently displayed Pokemon card.",
+          "parameters": null,
+          "return_type": "PokemonCard"
+        },
+        {
+          "name": "get errorMessage",
+          "description": "Provides access to the `_errorMessage` property, which holds any error messages that may have occurred during the card loading process.",
+          "parameters": null,
+          "return_type": "String"
+        }
+      ],
+      "dependencies": [
+        "pokemon_deck/app/app.locator.dart",
+        "pokemon_deck/models/pokemon_card.dart",
+        "pokemon_deck/services/pokemon_service.dart",
+        "stacked/stacked.dart",
+        "stacked_services/stacked_services.dart"
+      ]
+    },
+    {
+      "name": "lib/features/app/app_viewmodel.dart",
+      "description": "The AppViewModel class is responsible for managing the main application state and logic. It serves as the core view model for the overall application, providing a centralized point of access to the app's core functionality.",
+      "class_diagram": "@startuml\nclass AppViewModel {\n  +void someMethod()\n}\n@enduml",
+      "methods": [
+        {
+          "name": "someMethod",
+          "description": "This method is a placeholder for the actual core functionality and business logic of the application. It would contain the main methods and properties that define the app's behavior and state management.",
+          "parameters": null,
+          "return_type": null
+        }
+      ],
+      "dependencies": [
+        "package:stacked/stacked.dart"
+      ]
+    },
+    {
+      "name": "lib/ui/dialogs/info_alert/info_alert_dialog_model.dart",
+      "description": "This Dart file defines the `InfoAlertDialogModel` class, which is a `BaseViewModel` responsible for managing the state and behavior of an information alert dialog in a Flutter application.",
+      "class_diagram": "@startuml\nclass InfoAlertDialogModel extends BaseViewModel {\n}\n@enduml",
+      "methods": [],
+      "dependencies": [
+        "package:stacked/stacked.dart"
+      ]
+    },
+    {
+      "name": "lib/features/card_detail/card_detail_view.dart",
+      "description": "The `CardDetailView` class is responsible for rendering the detailed view of a Pokemon card. It displays the card's image, name, type, rarity, HP, attacks, weakness, resistance, and description. This view provides the user with comprehensive information about a specific Pokemon card, allowing them to explore the card's details in depth.",
+      "class_diagram": "@startuml\nclass CardDetailView {\n  + builder(BuildContext, CardDetailViewModel, Widget?): Widget\n  + _buildCardDetail(CardDetailViewModel): Widget\n  + viewModelBuilder(BuildContext): CardDetailViewModel\n  + onViewModelReady(CardDetailViewModel): void\n}\n\nclass CardDetailViewModel {\n  + card: PokemonCard\n  + isBusy: bool\n  + hasError: bool\n  + modelError: dynamic\n  + initialize(String): void\n}\n\nCardDetailView o-- CardDetailViewModel\n@enduml",
+      "methods": [
+        {
+          "name": "builder",
+          "description": "Builds the UI for the `CardDetailView` based on the state of the `CardDetailViewModel`.",
+          "parameters": [
+            "BuildContext",
+            "CardDetailViewModel",
+            "Widget?"
+          ],
+          "return_type": "Widget"
+        },
+        {
+          "name": "_buildCardDetail",
+          "description": "Builds the detailed UI for a specific Pokemon card.",
+          "parameters": [
+            "CardDetailViewModel"
+          ],
+          "return_type": "Widget"
+        },
+        {
+          "name": "viewModelBuilder",
+          "description": "Provides an instance of the `CardDetailViewModel` to the `StackedView`.",
+          "parameters": [
+            "BuildContext"
+          ],
+          "return_type": "CardDetailViewModel"
+        },
+        {
+          "name": "onViewModelReady",
+          "description": "Initializes the `CardDetailViewModel` with the provided card ID when the view model is ready.",
+          "parameters": [
+            "CardDetailViewModel"
+          ],
+          "return_type": null
+        }
+      ],
+      "dependencies": [
+        "package:flutter/material.dart",
+        "package:pokemon_deck/ui/common/app_colors.dart",
+        "package:pokemon_deck/ui/common/ui_helpers.dart",
+        "package:stacked/stacked.dart",
+        "card_detail_viewmodel.dart"
+      ]
     }
   ],
   "dependencies": [
@@ -137,7 +771,7 @@
       "purpose": "Creating gaps in layouts"
     }
   ],
-  "sequence_diagram": "@startuml\nactor User\nparticipant main\nparticipant AppView\nparticipant StartupView\nparticipant StartupViewModel\nparticipant HomeView\nparticipant HomeViewModel\n\nUser -> main: Launch app\nmain -> AppView: Create and run\nAppView -> StartupView: Initialize\nStartupView -> StartupViewModel: Run startup logic\nStartupViewModel -> HomeView: Navigate on completion\nHomeView -> HomeViewModel: Initialize\nUser -> HomeView: Interact\nHomeView -> HomeViewModel: Handle user actions\nHomeViewModel -> HomeView: Update UI\nHomeViewModel -> DialogService: Show dialog\nHomeViewModel -> BottomSheetService: Show bottom sheet\n@enduml",
-  "state_management_flow": "State is managed using the Stacked architecture. ViewModels (e.g., HomeViewModel, StartupViewModel) handle the business logic and state for their respective views. The app.locator.dart file sets up dependency injection, while app.router.dart manages navigation between views.",
-  "navigation_flow": "The application starts with main.dart, which sets up the app and runs AppView. AppView initializes the Stacked architecture and shows the StartupView. After completing initialization logic, it navigates to the HomeView. Navigation between views is handled by the Stacked Router defined in app.router.dart."
+  "sequence_diagram": "@startuml\nactor User\nparticipant main\nparticipant AppView\nparticipant StartupView\nparticipant StartupViewModel\nparticipant HomeView\nparticipant HomeViewModel\nparticipant CardDetailView\nparticipant CardDetailViewModel\n\nUser -> main: Launch app\nmain -> AppView: Create and run\nAppView -> StartupView: Initialize\nStartupView -> StartupViewModel: Run startup logic\nStartupViewModel -> HomeView: Navigate on completion\nHomeView -> HomeViewModel: Initialize\nUser -> HomeView: View card collection\nHomeView -> HomeViewModel: Handle user actions\nHomeViewModel -> HomeView: Update UI\nUser -> HomeView: Tap card\nHomeView -> CardDetailView: Navigate to card details\nCardDetailView -> CardDetailViewModel: Initialize with card ID\nCardDetailViewModel -> PokemonService: Load card details\nCardDetailViewModel -> CardDetailView: Update UI with card details\nUser -> CardDetailView: Interact with card\nCardDetailView -> CardDetailViewModel: Handle user actions\nCardDetailViewModel -> PokemonService: Update card data\nCardDetailViewModel -> CardDetailView: Update UI\n@enduml",
+  "state_management_flow": "The application uses the Stacked architecture for state management. Each major screen (e.g., HomeView, CardDetailView) has a corresponding ViewModel class that manages the state and business logic for that screen. The ViewModels interact with various services, such as PokemonService and DialogService, to fetch data, update the UI, and handle user interactions. The state is then passed down to the Views, which are responsible for rendering the UI based on the current state. This separation of concerns promotes testability, maintainability, and scalability.",
+  "navigation_flow": "The application's navigation is handled using the Stacked Router, which is defined in the app.router.dart file. This file declares the available routes (HomeView and CardDetailView) and provides helper methods to navigate between them. When the user interacts with the app, the ViewModels call the appropriate navigation methods, such as navigateToCardDetailView(), which handles the transition to the detailed card view. This centralized approach to navigation ensures consistency and flexibility in the application's routing logic."
 }
