@@ -1,10 +1,10 @@
 import 'package:equatable/equatable.dart';
 
-class PokemonCard extends Equatable {
+class PokemonCard {
   final String id;
   final String name;
   final String imageUrl;
-  final String type;
+  final String type; 
   final String rarity;
   final String description;
   final int hp;
@@ -28,7 +28,7 @@ class PokemonCard extends Equatable {
   factory PokemonCard.fromJson(Map<String, dynamic> json) {
     return PokemonCard(
       id: json['id'] as String,
-      name: json['name'] as String,
+      name: json['name'] as String, 
       imageUrl: json['imageUrl'] as String,
       type: json['type'] as String,
       rarity: json['rarity'] as String,
@@ -46,7 +46,7 @@ class PokemonCard extends Equatable {
       'name': name,
       'imageUrl': imageUrl,
       'type': type,
-      'rarity': rarity,
+      'rarity': rarity, 
       'description': description,
       'hp': hp,
       'attacks': attacks,
@@ -54,18 +54,4 @@ class PokemonCard extends Equatable {
       'resistance': resistance,
     };
   }
-
-  @override
-  List<Object?> get props => [
-        id,
-        name,
-        imageUrl,
-        type,
-        rarity,
-        description,
-        hp,
-        attacks,
-        weakness,
-        resistance,
-      ];
 }

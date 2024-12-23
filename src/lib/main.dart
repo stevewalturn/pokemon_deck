@@ -1,29 +1,22 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:pokemon_deck/app/app.bottomsheets.dart';
-import 'package:pokemon_deck/app/app.dialogs.dart';
-import 'package:pokemon_deck/app/app.locator.dart';
+import 'package:stacked_services/stacked_services.dart';
 
+import 'app/app.bottomsheets.dart';
+import 'app/app.dialogs.dart';
+import 'app/app.locator.dart';
 import 'features/app/app_view.dart';
 
-void main() async {
-  await runZonedGuarded(() async {
-    WidgetsFlutterBinding.ensureInitialized();
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
 
-    await SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-    ]);
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]);
 
-    await setupLocator();
-    setupDialogUi();
-    setupBottomSheetUi();
+  await setupLocator();
+  setupDialogUi();
+  setupBottomSheetUi();
 
-    runApp(const AppView());
-  }, (exception, stackTrace) async {
-    // Handle exceptions here
-    print('Caught error: $exception');
-    print('Stack trace: $stackTrace');
-    // You might want to log this to a service or show a user-friendly error message
-  });
+  runApp(const AppView());
 }

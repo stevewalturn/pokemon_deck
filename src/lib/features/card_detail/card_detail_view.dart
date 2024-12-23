@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pokemon_deck/ui/common/app_colors.dart';
 import 'package:pokemon_deck/ui/common/ui_helpers.dart';
 import 'package:stacked/stacked.dart';
+
 import 'card_detail_viewmodel.dart';
 
 class CardDetailView extends StackedView<CardDetailViewModel> {
@@ -75,9 +76,9 @@ class CardDetailView extends StackedView<CardDetailViewModel> {
           Text('Weakness: ${card.weakness}'),
           Text('Resistance: ${card.resistance}'),
           verticalSpaceMedium,
-          Text(
+          const Text(
             'Description:',
-            style: const TextStyle(fontWeight: FontWeight.bold),
+            style: TextStyle(fontWeight: FontWeight.bold),
           ),
           Text(card.description),
         ],
@@ -85,7 +86,7 @@ class CardDetailView extends StackedView<CardDetailViewModel> {
     );
   }
 
-  @override
+  @override 
   CardDetailViewModel viewModelBuilder(BuildContext context) =>
       CardDetailViewModel();
 
