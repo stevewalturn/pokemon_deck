@@ -1,7 +1,7 @@
 {
   "package_name": "com.walturn_tech.pokemon_deck",
-  "project_description": "A Flutter project using the Stacked architecture, featuring routing, dependency injection, and dialog/bottom sheet management.",
-  "architecture_overview": "The application follows the Stacked architecture with separate folders for app setup, features, UI components, and utilities. It uses Stacked for state management, routing, and dependency injection.",
+  "project_description": "A Pok\u00e9mon Trading Card Game deck management application built with Flutter, using Stacked architecture. The app provides startup initialization, a home screen with basic counter functionality, and demonstrates dependency injection, dialog/bottom sheet management, and navigation between views.",
+  "architecture_overview": "Utilizes Stacked architecture with a modular design featuring separate components for views, view models, services, and utilities. Implements dependency injection via app.locator.dart, centralized routing through app.router.dart, and custom dialog/bottom sheet management using app.dialogs.dart and app.bottomsheets.dart.",
   "files": [
     {
       "name": "lib/app/app.dart",
@@ -113,6 +113,298 @@
         "package:my_app/app/app.locator.dart",
         "package:my_app/features/app/app_view.dart"
       ]
+    },
+    {
+      "name": "lib/ui/bottom_sheets/notice/notice_sheet_model.dart",
+      "description": "A base view model for the Notice Bottom Sheet, providing reactive state management capabilities using Stacked library's BaseViewModel",
+      "class_diagram": "@startuml\nclass NoticeSheetModel extends BaseViewModel {\n}\n@enduml",
+      "methods": [],
+      "dependencies": [
+        "package:stacked/stacked.dart"
+      ]
+    },
+    {
+      "name": "lib/ui/dialogs/info_alert/info_alert_dialog_model.dart",
+      "description": "A base view model for managing state and logic for an informational alert dialog in a Flutter application, using the Stacked architectural pattern",
+      "class_diagram": "@startuml\nclass InfoAlertDialogModel extends BaseViewModel {\n}\n@enduml",
+      "methods": [
+        {
+          "name": "constructor",
+          "description": "Creates an instance of the info alert dialog view model",
+          "parameters": null,
+          "return_type": null
+        }
+      ],
+      "dependencies": [
+        "package:stacked/stacked.dart"
+      ]
+    },
+    {
+      "name": "lib/app/app.locator.dart",
+      "description": "A dependency injection and service locator configuration file that sets up core application services using the Stacked architecture pattern, enabling centralized dependency management and service registration",
+      "class_diagram": "@startuml\nclass StackedLocator {\n  +instance: StackedLocator\n  +registerLazySingleton()\n  +registerEnvironment()\n}\nclass ServiceLocator {\n  +setupLocator()\n  -registerCoreServices()\n}\n@enduml",
+      "methods": [
+        {
+          "name": "setupLocator",
+          "description": "Initializes the dependency injection container by registering core application services as lazy singletons",
+          "parameters": [
+            "environment",
+            "environmentFilter"
+          ],
+          "return_type": "Future<void>"
+        }
+      ],
+      "dependencies": [
+        "stacked_services/bottom_sheet_service",
+        "stacked_services/dialog_service",
+        "stacked_services/navigation_service",
+        "stacked_shared"
+      ]
+    },
+    {
+      "name": "lib/features/app/app_viewmodel.dart",
+      "description": "A base ViewModel for the application using the Stacked architecture, designed to manage global application state and provide a foundational structure for view models across the app",
+      "class_diagram": "@startuml\nclass AppViewModel extends BaseViewModel {\n}\n@enduml",
+      "methods": [
+        {
+          "name": "constructor",
+          "description": "Creates a base AppViewModel that inherits from Stacked's BaseViewModel",
+          "parameters": null,
+          "return_type": null
+        }
+      ],
+      "dependencies": [
+        "package:stacked/stacked.dart"
+      ]
+    },
+    {
+      "name": "lib/ui/common/app_colors.dart",
+      "description": "A centralized color palette configuration file that defines consistent, application-wide color theming to ensure visual coherence and easy color management across the Flutter application",
+      "class_diagram": "@startuml\nclass AppColors {\n  + {static} kcPrimaryColor: Color\n  + {static} kcPrimaryColorDark: Color\n  + {static} kcDarkGreyColor: Color\n  + {static} kcMediumGrey: Color\n  + {static} kcLightGrey: Color\n  + {static} kcVeryLightGrey: Color\n  + {static} kcBackgroundColor: Color\n}\n@enduml",
+      "methods": [
+        {
+          "name": "Color Constants",
+          "description": "Defines a set of predefined color constants for consistent theming and branding",
+          "parameters": null,
+          "return_type": null
+        }
+      ],
+      "dependencies": [
+        "flutter/material.dart"
+      ]
+    },
+    {
+      "name": "lib/ui/common/ui_helpers.dart",
+      "description": "A utility file providing responsive UI sizing and spacing helpers for Flutter applications, designed to simplify UI layout and create consistent, adaptive interfaces across different screen sizes",
+      "class_diagram": "@startuml\nclass UIHelpers {\n  +horizontalSpaceTiny: Widget\n  +verticalSpaceLarge: Widget\n  +screenWidth(context): double\n  +screenHeight(context): double\n  +getResponsiveFontSize(context): double\n}\n@enduml",
+      "methods": [
+        {
+          "name": "screenWidth",
+          "description": "Retrieves the total screen width for responsive design calculations",
+          "parameters": [
+            "BuildContext context"
+          ],
+          "return_type": "double"
+        },
+        {
+          "name": "screenHeightFraction",
+          "description": "Calculates a fraction of screen height with optional offset and maximum limit",
+          "parameters": [
+            "BuildContext context",
+            "int dividedBy",
+            "double offsetBy",
+            "double max"
+          ],
+          "return_type": "double"
+        },
+        {
+          "name": "getResponsiveFontSize",
+          "description": "Dynamically calculates font size based on screen width, ensuring consistent typography across devices",
+          "parameters": [
+            "BuildContext context",
+            "double? fontSize",
+            "double? max"
+          ],
+          "return_type": "double"
+        }
+      ],
+      "dependencies": [
+        "flutter/material.dart",
+        "dart:math"
+      ]
+    },
+    {
+      "name": "lib/features/constants/deck_constants.dart",
+      "description": "A configuration and validation utility for defining Pok\u00e9mon Trading Card Game deck composition rules, providing centralized constants and error messages for deck building constraints.",
+      "class_diagram": "@startuml\nclass DeckConstants {\n  + {static} standardDeckSize: int\n  + {static} minimumDeckSize: int\n  + {static} maximumDeckSize: int\n  + {static} maxCopiesOfSameCard: int\n  + {static} maxEnergyCards: int\n  + {static} maxTrainerCards: int\n  + {static} maxPokemonCards: int\n  + {static} deckSizeError: String\n  + {static} maxCopiesError: String\n  + {static} energyLimitError: String\n  + {static} trainerLimitError: String\n  + {static} pokemonLimitError: String\n}\n@enduml",
+      "methods": [
+        {
+          "name": "getDeckSizeLimit",
+          "description": "Returns the standard deck size requirement of 60 cards",
+          "parameters": null,
+          "return_type": "int"
+        }
+      ],
+      "dependencies": []
+    },
+    {
+      "name": "lib/ui/bottom_sheets/notice/notice_sheet.dart",
+      "description": "A custom bottom sheet component for displaying informational notices or alerts in the Pokemon Deck application, providing a standardized UI for presenting user-facing messages with a title and description",
+      "class_diagram": "@startuml\nclass NoticeSheet {\n  +completer: Function(SheetResponse)\n  +request: SheetRequest\n  +builder(BuildContext, NoticeSheetModel, Widget?): Widget\n  +viewModelBuilder(BuildContext): NoticeSheetModel\n}\n@enduml",
+      "methods": [
+        {
+          "name": "builder",
+          "description": "Constructs the visual representation of the notice bottom sheet with title and description",
+          "parameters": [
+            "BuildContext",
+            "NoticeSheetModel",
+            "Widget?"
+          ],
+          "return_type": "Widget"
+        },
+        {
+          "name": "viewModelBuilder",
+          "description": "Creates the view model for managing the notice sheet's state and logic",
+          "parameters": [
+            "BuildContext"
+          ],
+          "return_type": "NoticeSheetModel"
+        }
+      ],
+      "dependencies": [
+        "flutter/material.dart",
+        "stacked/stacked.dart",
+        "stacked_services/stacked_services.dart",
+        "pokemon_deck/ui/bottom_sheets/notice/notice_sheet_model.dart",
+        "pokemon_deck/ui/common/app_colors.dart",
+        "pokemon_deck/ui/common/ui_helpers.dart"
+      ]
+    },
+    {
+      "name": "lib/ui/dialogs/info_alert/info_alert_dialog.dart",
+      "description": "A reusable informational dialog component that displays a customizable alert with a title, description, and a dismissal button, designed to provide user feedback and communicate important information in the Pok\u00e9mon Deck application",
+      "class_diagram": "@startuml\nclass InfoAlertDialog {\n  +request: DialogRequest\n  +completer: Function(DialogResponse)\n  +builder(context, viewModel, child): Widget\n  +viewModelBuilder(context): InfoAlertDialogModel\n}\n@enduml",
+      "methods": [
+        {
+          "name": "builder",
+          "description": "Constructs the visual layout and interaction for the informational dialog",
+          "parameters": [
+            "BuildContext",
+            "InfoAlertDialogModel",
+            "Widget?"
+          ],
+          "return_type": "Widget"
+        },
+        {
+          "name": "viewModelBuilder",
+          "description": "Creates the view model instance for the dialog",
+          "parameters": [
+            "BuildContext"
+          ],
+          "return_type": "InfoAlertDialogModel"
+        }
+      ],
+      "dependencies": [
+        "flutter/material.dart",
+        "stacked/stacked.dart",
+        "stacked_services/stacked_services.dart",
+        "pokemon_deck/ui/common/app_colors.dart",
+        "pokemon_deck/ui/common/ui_helpers.dart"
+      ]
+    },
+    {
+      "name": "lib/app/app.router.dart",
+      "description": "Automated routing configuration for a Flutter application using Stacked navigation, providing a type-safe and declarative way to manage app screen navigation and transitions",
+      "class_diagram": "@startuml\nclass StackedRouter {\n  +routes: List<RouteDef>\n  +pagesMap: Map<Type, StackedRouteFactory>\n  +getRoutes()\n  +getPageMap()\n}\nclass Routes {\n  +{static} homeView: String\n  +{static} startupView: String\n}\nclass NavigatorStateExtension {\n  +navigateToHomeView()\n  +navigateToStartupView()\n  +replaceWithHomeView()\n  +replaceWithStartupView()\n}\n@enduml",
+      "methods": [
+        {
+          "name": "navigateToHomeView",
+          "description": "Navigate to the Home screen with optional routing parameters",
+          "parameters": [
+            "routerId",
+            "preventDuplicates",
+            "parameters",
+            "transition"
+          ],
+          "return_type": "Future<dynamic>"
+        },
+        {
+          "name": "navigateToStartupView",
+          "description": "Navigate to the Startup screen with optional routing parameters",
+          "parameters": [
+            "routerId",
+            "preventDuplicates",
+            "parameters",
+            "transition"
+          ],
+          "return_type": "Future<dynamic>"
+        },
+        {
+          "name": "replaceWithHomeView",
+          "description": "Replace current screen with Home screen, maintaining navigation stack",
+          "parameters": [
+            "routerId",
+            "preventDuplicates",
+            "parameters",
+            "transition"
+          ],
+          "return_type": "Future<dynamic>"
+        },
+        {
+          "name": "replaceWithStartupView",
+          "description": "Replace current screen with Startup screen, maintaining navigation stack",
+          "parameters": [
+            "routerId",
+            "preventDuplicates",
+            "parameters",
+            "transition"
+          ],
+          "return_type": "Future<dynamic>"
+        }
+      ],
+      "dependencies": [
+        "flutter/material.dart",
+        "stacked/stacked.dart",
+        "stacked_services/stacked_services.dart",
+        "features/home/home_view.dart",
+        "features/startup/startup_view.dart"
+      ]
+    },
+    {
+      "name": "lib/app/app.bottomsheets.dart",
+      "description": "A configuration file for registering and managing bottom sheet types in a Stacked Flutter application, providing a centralized mechanism for creating and presenting dynamic bottom sheet interfaces",
+      "class_diagram": "@startuml\nclass BottomSheetType {\n  + notice\n}\nclass setupBottomSheetUi {\n  + register bottom sheet builders\n}\n@enduml",
+      "methods": [
+        {
+          "name": "setupBottomSheetUi",
+          "description": "Configures and registers bottom sheet builders with the BottomSheetService, mapping enum types to specific bottom sheet implementations",
+          "parameters": null,
+          "return_type": "void"
+        }
+      ],
+      "dependencies": [
+        "stacked_services/stacked_services.dart",
+        "app.locator.dart",
+        "../ui/bottom_sheets/notice/notice_sheet.dart"
+      ]
+    },
+    {
+      "name": "lib/app/app.dialogs.dart",
+      "description": "A configuration file for centralizing and registering custom dialog types in the application, providing a standardized mechanism for creating and managing dialogs through a dialog service",
+      "class_diagram": "@startuml\nclass DialogType {\n  + infoAlert\n}\nclass setupDialogUi {\n  + registerCustomDialogBuilders()\n}\n@enduml",
+      "methods": [
+        {
+          "name": "setupDialogUi",
+          "description": "Registers custom dialog builders with the dialog service, mapping dialog types to their corresponding dialog implementations",
+          "parameters": null,
+          "return_type": "void"
+        }
+      ],
+      "dependencies": [
+        "stacked_services/stacked_services.dart",
+        "app.locator.dart",
+        "ui/dialogs/info_alert/info_alert_dialog.dart"
+      ]
     }
   ],
   "dependencies": [
@@ -137,7 +429,7 @@
       "purpose": "Creating gaps in layouts"
     }
   ],
-  "sequence_diagram": "@startuml\nactor User\nparticipant main\nparticipant AppView\nparticipant StartupView\nparticipant StartupViewModel\nparticipant HomeView\nparticipant HomeViewModel\n\nUser -> main: Launch app\nmain -> AppView: Create and run\nAppView -> StartupView: Initialize\nStartupView -> StartupViewModel: Run startup logic\nStartupViewModel -> HomeView: Navigate on completion\nHomeView -> HomeViewModel: Initialize\nUser -> HomeView: Interact\nHomeView -> HomeViewModel: Handle user actions\nHomeViewModel -> HomeView: Update UI\nHomeViewModel -> DialogService: Show dialog\nHomeViewModel -> BottomSheetService: Show bottom sheet\n@enduml",
-  "state_management_flow": "State is managed using the Stacked architecture. ViewModels (e.g., HomeViewModel, StartupViewModel) handle the business logic and state for their respective views. The app.locator.dart file sets up dependency injection, while app.router.dart manages navigation between views.",
-  "navigation_flow": "The application starts with main.dart, which sets up the app and runs AppView. AppView initializes the Stacked architecture and shows the StartupView. After completing initialization logic, it navigates to the HomeView. Navigation between views is handled by the Stacked Router defined in app.router.dart."
+  "sequence_diagram": "@startuml\nactor User\nparticipant main\nparticipant AppView\nparticipant StartupView\nparticipant StartupViewModel\nparticipant HomeView\nparticipant HomeViewModel\n\nUser -> main: Launch app\nmain -> AppView: Create and run\nAppView -> StartupView: Initialize\nStartupView -> StartupViewModel: Run startup logic\nStartupViewModel -> HomeView: Navigate on completion\nHomeView -> HomeViewModel: Initialize\nUser -> HomeView: Interact\nHomeView -> HomeViewModel: Trigger actions\nHomeViewModel -> DialogService: Show custom dialog\nHomeViewModel -> BottomSheetService: Show notice sheet\n@enduml",
+  "state_management_flow": "State is managed through Stacked's BaseViewModel, with view models like HomeViewModel and StartupViewModel handling reactive state updates. Dependency injection is managed via StackedLocator, registering services like DialogService, NavigationService, and BottomSheetService as lazy singletons.",
+  "navigation_flow": "Navigation is implemented using Stacked's routing system, defined in app.router.dart. The app follows a predefined route sequence from StartupView to HomeView, with type-safe navigation methods for programmatic screen transitions and replacement."
 }
