@@ -3,30 +3,28 @@ import 'package:pokemon_deck/app/app.dialogs.dart';
 import 'package:pokemon_deck/app/app.locator.dart';
 import 'package:pokemon_deck/features/constants/deck_constants.dart';
 import 'package:pokemon_deck/features/home/models/pokemon_card_model.dart';
+import 'package:pokemon_deck/features/home/services/deck_service.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
 class HomeViewModel extends BaseViewModel {
   final _dialogService = locator<DialogService>();
   final _bottomSheetService = locator<BottomSheetService>();
+  final _deckService = locator<DeckService>();
 
   List<PokemonCard> _pokemonCards = [];
 
   List<PokemonCard> get pokemonCards => _pokemonCards;
 
   String get deckSizeLabel =>
-      'Standard deck size: ${DeckConstants.standardDeckSize} cards';
+      'Cards in deck: ${_pokemonCards.length}/${DeckConstants.standardDeckSize}';
 
   HomeViewModel() {
-    _loadInitialCards();
+    _loadInitialDeck();
   }
 
-  void _loadInitialCards() {
-    // In a real app, this would load from a service
-    _pokemonCards = List.generate(
-      5,
-      (index) => PokemonCard.mock(),
-    );
+  void _loadInitialDeck() {
+    _pokemonCards = _deckService.getInitialDeck();
     notifyListeners();
   }
 
