@@ -1,0 +1,1 @@
+Remove the counter and change background color of the app to Pokemon themed colors
