@@ -14,6 +14,10 @@ class HomeView extends StackedView<HomeViewModel> {
     Widget? child,
   ) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Pokémon Deck Builder'),
+        centerTitle: true,
+      ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 25.0),
@@ -26,10 +30,19 @@ class HomeView extends StackedView<HomeViewModel> {
                 Column(
                   children: [
                     const Text(
-                      'Hello from STEVE x STACKED!',
+                      'Welcome to Pokémon Deck Builder!',
                       style: TextStyle(
-                        fontSize: 35,
+                        fontSize: 24,
                         fontWeight: FontWeight.w900,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const Gap(25),
+                    Text(
+                      viewModel.deckSizeLabel,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                     const Gap(25),
@@ -47,27 +60,28 @@ class HomeView extends StackedView<HomeViewModel> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     MaterialButton(
-                      color: Colors.grey,
+                      color: Colors.blue,
                       onPressed: viewModel.showDialog,
                       child: const Text(
-                        'Show Dialog',
+                        'Deck Rules',
                         style: TextStyle(
                           color: Colors.white,
                         ),
                       ),
                     ),
                     MaterialButton(
-                      color: Colors.grey,
+                      color: Colors.green,
                       onPressed: viewModel.showBottomSheet,
                       child: const Text(
-                        'Show Bottom Sheet',
+                        'Card Limits',
                         style: TextStyle(
                           color: Colors.white,
                         ),
                       ),
                     ),
                   ],
-                )
+                ),
+                const Gap(50),
               ],
             ),
           ),
