@@ -1,7 +1,7 @@
 {
   "package_name": "com.walturn_tech.pokemon_deck",
-  "project_description": "A lightweight Flutter application for Pok\u00e9mon Trading Card Game deck management, providing a demonstration of core mobile app architectural patterns. The app includes a startup initialization flow, a home screen with a basic counter feature, and showcases dynamic dialog and bottom sheet interactions. It serves as a reference implementation for modular design, reactive state handling, and service-based architecture in Flutter.",
-  "architecture_overview": "Implements a modular Stacked architecture with clear separation of concerns, utilizing dependency injection via StackedLocator and centralized routing. The application leverages reactive view models for state management, with services handling cross-cutting concerns like navigation, dialogs, and bottom sheets. Key design principles include type-safe implementation, reactive programming, and component-based design.",
+  "project_description": "A Flutter application demonstrating a Pok\u00e9mon Trading Card Game (TCG) deck management system with core mobile app architectural patterns. The app provides a startup initialization flow, a home screen with a counter feature, and showcases dynamic dialog and bottom sheet interactions. It includes a swipeable Pok\u00e9mon card deck interface and serves as a reference implementation for modular design in Flutter.",
+  "architecture_overview": "Implements a modular Stacked architecture with clear separation of concerns, utilizing dependency injection via StackedLocator and centralized routing. The application leverages reactive view models for state management, with services handling cross-cutting concerns like navigation, dialogs, and bottom sheets. Key design principles include type-safe implementation, responsive UI components, and a component-based design with reusable widgets for Pok\u00e9mon card representation.",
   "files": [
     {
       "name": "lib/app/app.dart",
@@ -405,6 +405,104 @@
         "app.locator.dart",
         "ui/dialogs/info_alert/info_alert_dialog.dart"
       ]
+    },
+    {
+      "name": "lib/features/home/models/pokemon_card_model.dart",
+      "description": "A data model representing a Pok\u00e9mon card with its core attributes, designed to encapsulate and standardize Pok\u00e9mon card data throughout the application, with built-in equality comparison and mock data generation capabilities.",
+      "class_diagram": "@startuml\nclass PokemonCard {\n  +id: String\n  +name: String\n  +imageUrl: String\n  +type: String\n  +energyCost: int\n  +rarity: String\n  +description: String\n  +mock(): PokemonCard\n}\n@enduml",
+      "methods": [
+        {
+          "name": "constructor",
+          "description": "Creates a PokemonCard instance with all required attributes",
+          "parameters": [
+            "id",
+            "name",
+            "imageUrl",
+            "type",
+            "energyCost",
+            "rarity",
+            "description"
+          ],
+          "return_type": null
+        },
+        {
+          "name": "mock",
+          "description": "Generates a sample/default Pok\u00e9mon card for testing or placeholder purposes",
+          "parameters": null,
+          "return_type": "PokemonCard"
+        }
+      ],
+      "dependencies": [
+        "package:equatable/equatable.dart"
+      ]
+    },
+    {
+      "name": "lib/features/home/widgets/pokemon_card_widget.dart",
+      "description": "A reusable UI component for rendering a Pokemon card with detailed visual representation, displaying key card information like name, type, energy cost, description, and rarity in a stylized container",
+      "class_diagram": "@startuml\nclass PokemonCardWidget {\n  +final PokemonCard card\n  +final double rotation\n  +final double scale\n  +Widget build(BuildContext context)\n  -Widget _buildChip(String label)\n}\n@enduml",
+      "methods": [
+        {
+          "name": "build",
+          "description": "Constructs the visual layout of the Pokemon card with image, metadata, and styling",
+          "parameters": [
+            "BuildContext context"
+          ],
+          "return_type": "Widget"
+        },
+        {
+          "name": "_buildChip",
+          "description": "Creates a styled chip/tag for displaying Pokemon type and energy cost",
+          "parameters": [
+            "String label"
+          ],
+          "return_type": "Widget"
+        }
+      ],
+      "dependencies": [
+        "package:flutter/material.dart",
+        "pokemon_card_model.dart",
+        "app_colors.dart",
+        "ui_helpers.dart"
+      ]
+    },
+    {
+      "name": "lib/features/home/widgets/swipable_deck_widget.dart",
+      "description": "A widget that creates an interactive, swipeable deck of Pokemon cards with gesture-based navigation and dynamic visual feedback during card interactions",
+      "class_diagram": "@startuml\nclass SwipableDeckWidget {\n  +cards: List<PokemonCard>\n  +onSwipeLeft(card: PokemonCard)\n  +onSwipeRight(card: PokemonCard)\n}\nclass _SwipableDeckWidgetState {\n  -_dragPosition: double\n  -_dragRotation: double\n  -_scale: double\n  +_onPanUpdate(details: DragUpdateDetails)\n  +_onPanEnd(details: DragEndDetails)\n}\n@enduml",
+      "methods": [
+        {
+          "name": "SwipableDeckWidget Constructor",
+          "description": "Creates a swipeable deck with a list of Pokemon cards and handlers for left/right swipe actions",
+          "parameters": [
+            "cards",
+            "onSwipeLeft",
+            "onSwipeRight"
+          ],
+          "return_type": null
+        },
+        {
+          "name": "_onPanUpdate",
+          "description": "Updates card's visual state during horizontal drag, managing rotation and scale dynamically",
+          "parameters": [
+            "DragUpdateDetails"
+          ],
+          "return_type": "void"
+        },
+        {
+          "name": "_onPanEnd",
+          "description": "Triggers swipe actions when card is dragged beyond threshold, resetting visual state",
+          "parameters": [
+            "DragEndDetails"
+          ],
+          "return_type": "void"
+        }
+      ],
+      "dependencies": [
+        "dart:math",
+        "flutter/material.dart",
+        "pokemon_deck/features/home/models/pokemon_card_model.dart",
+        "pokemon_deck/features/home/widgets/pokemon_card_widget.dart"
+      ]
     }
   ],
   "dependencies": [
@@ -429,7 +527,7 @@
       "purpose": "Creating gaps in layouts"
     }
   ],
-  "sequence_diagram": "@startuml\nactor User\nparticipant main\nparticipant AppView\nparticipant StartupView\nparticipant StartupViewModel\nparticipant HomeView\nparticipant HomeViewModel\n\nUser -> main: Launch app\nmain -> AppView: Create application\nAppView -> StartupView: Initialize startup\nStartupView -> StartupViewModel: Execute startup logic\nStartupViewModel -> HomeView: Navigate to home screen\nHomeView -> HomeViewModel: Initialize home state\nUser -> HomeView: Interact with UI\nHomeViewModel -> DialogService: Show information dialog\nHomeViewModel -> BottomSheetService: Display notice sheet\n@enduml",
-  "state_management_flow": "Utilizes Stacked's BaseViewModel for reactive state management. View models like HomeViewModel and StartupViewModel inherit from BaseViewModel, enabling reactive state updates. State changes are automatically propagated to the UI, ensuring a clean separation between business logic and presentation. Dependency injection through StackedLocator allows centralized service management and lazy singleton registration.",
-  "navigation_flow": "Implements type-safe navigation using Stacked's routing system, defined in app.router.dart. Supports programmatic screen transitions with NavigationService, enabling push and replace navigation methods. The primary navigation flow moves from StartupView to HomeView, with compile-time route checking ensuring navigation safety and consistency across the application."
+  "sequence_diagram": "@startuml\nactor User\nparticipant main\nparticipant AppView\nparticipant StartupView\nparticipant StartupViewModel\nparticipant HomeView\nparticipant HomeViewModel\nparticipant PokemonCardWidget\nparticipant SwipableDeckWidget\n\nUser -> main: Launch app\nmain -> AppView: Create application\nAppView -> StartupView: Initialize startup\nStartupView -> StartupViewModel: Execute startup logic\nStartupViewModel -> HomeView: Navigate to home screen\nHomeView -> HomeViewModel: Initialize home state\nHomeView -> SwipableDeckWidget: Display card deck\nUser -> SwipableDeckWidget: Swipe cards\nUser -> HomeViewModel: Interact with counter\nHomeViewModel -> DialogService: Show information dialog\nHomeViewModel -> BottomSheetService: Display notice sheet\n@enduml",
+  "state_management_flow": "Leverages Stacked's BaseViewModel for reactive state management across view models like HomeViewModel and StartupViewModel. Implements a unidirectional data flow where view models handle state changes and automatically propagate updates to the UI. Uses reactive properties and methods to manage dynamic state, with dependency injection through StackedLocator enabling centralized service management and lazy singleton registration.",
+  "navigation_flow": "Implements type-safe navigation using Stacked's routing system with compile-time route definitions. Supports programmatic screen transitions via NavigationService, enabling push and replace methods. Primary navigation flow moves from StartupView to HomeView, with explicit route management ensuring navigation safety. Routing configuration in app.router.dart provides a declarative and strongly-typed approach to managing application screens and transitions."
 }

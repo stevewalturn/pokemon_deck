@@ -1,0 +1,1 @@
+Show swipable cards for the pokemon deck
