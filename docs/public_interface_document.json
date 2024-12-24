@@ -1,7 +1,7 @@
 {
   "package_name": "com.walturn_tech.pokemon_deck",
-  "project_description": "A Flutter application demonstrating a Pok\u00e9mon Trading Card Game (TCG) deck management system with core mobile app architectural patterns. The app provides a startup initialization flow, a home screen with a counter feature, and showcases dynamic dialog and bottom sheet interactions. It includes a swipeable Pok\u00e9mon card deck interface and serves as a reference implementation for modular design in Flutter.",
-  "architecture_overview": "Implements a modular Stacked architecture with clear separation of concerns, utilizing dependency injection via StackedLocator and centralized routing. The application leverages reactive view models for state management, with services handling cross-cutting concerns like navigation, dialogs, and bottom sheets. Key design principles include type-safe implementation, responsive UI components, and a component-based design with reusable widgets for Pok\u00e9mon card representation.",
+  "project_description": "A Flutter Pok\u00e9mon Trading Card Game (TCG) deck management application that provides a modular, interactive experience for exploring and managing Pok\u00e9mon card decks. The app features a startup initialization flow, a home screen with a counter feature, dynamic dialog and bottom sheet interactions, and a swipeable Pok\u00e9mon card deck interface. Users can navigate through cards, view card details, and interact with a sample deck of Pok\u00e9mon cards.",
+  "architecture_overview": "Implements a modular Stacked architecture with clear separation of concerns, utilizing dependency injection via StackedLocator and centralized routing. The application leverages reactive view models for state management, with services handling cross-cutting concerns. Key design principles include type-safe implementation, responsive UI components, and a component-based design with reusable widgets for Pok\u00e9mon card representation, supporting easy extensibility and maintainability.",
   "files": [
     {
       "name": "lib/app/app.dart",
@@ -503,6 +503,30 @@
         "pokemon_deck/features/home/models/pokemon_card_model.dart",
         "pokemon_deck/features/home/widgets/pokemon_card_widget.dart"
       ]
+    },
+    {
+      "name": "lib/features/home/services/deck_service.dart",
+      "description": "A service responsible for managing the initial deck configuration and validation for a Pokemon card game application, providing core deck-related functionality such as retrieving a predefined deck and performing basic deck validation.",
+      "class_diagram": "@startuml\nclass DeckService {\n  - _initialDeck: List<PokemonCard>\n  + getInitialDeck(): List<PokemonCard>\n  + isDeckValid(deck: List<PokemonCard>): bool\n}\n@enduml",
+      "methods": [
+        {
+          "name": "getInitialDeck",
+          "description": "Retrieves a predefined deck of Pokemon cards with a mix of Pokemon, Energy, and Trainer cards",
+          "parameters": null,
+          "return_type": "List<PokemonCard>"
+        },
+        {
+          "name": "isDeckValid",
+          "description": "Validates a deck to ensure it meets basic structural requirements, such as having exactly 60 cards",
+          "parameters": [
+            "deck"
+          ],
+          "return_type": "bool"
+        }
+      ],
+      "dependencies": [
+        "pokemon_card_model.dart"
+      ]
     }
   ],
   "dependencies": [
@@ -527,7 +551,7 @@
       "purpose": "Creating gaps in layouts"
     }
   ],
-  "sequence_diagram": "@startuml\nactor User\nparticipant main\nparticipant AppView\nparticipant StartupView\nparticipant StartupViewModel\nparticipant HomeView\nparticipant HomeViewModel\nparticipant PokemonCardWidget\nparticipant SwipableDeckWidget\n\nUser -> main: Launch app\nmain -> AppView: Create application\nAppView -> StartupView: Initialize startup\nStartupView -> StartupViewModel: Execute startup logic\nStartupViewModel -> HomeView: Navigate to home screen\nHomeView -> HomeViewModel: Initialize home state\nHomeView -> SwipableDeckWidget: Display card deck\nUser -> SwipableDeckWidget: Swipe cards\nUser -> HomeViewModel: Interact with counter\nHomeViewModel -> DialogService: Show information dialog\nHomeViewModel -> BottomSheetService: Display notice sheet\n@enduml",
-  "state_management_flow": "Leverages Stacked's BaseViewModel for reactive state management across view models like HomeViewModel and StartupViewModel. Implements a unidirectional data flow where view models handle state changes and automatically propagate updates to the UI. Uses reactive properties and methods to manage dynamic state, with dependency injection through StackedLocator enabling centralized service management and lazy singleton registration.",
-  "navigation_flow": "Implements type-safe navigation using Stacked's routing system with compile-time route definitions. Supports programmatic screen transitions via NavigationService, enabling push and replace methods. Primary navigation flow moves from StartupView to HomeView, with explicit route management ensuring navigation safety. Routing configuration in app.router.dart provides a declarative and strongly-typed approach to managing application screens and transitions."
+  "sequence_diagram": "@startuml\nactor User\nparticipant main\nparticipant AppView\nparticipant StartupView\nparticipant StartupViewModel\nparticipant HomeView\nparticipant HomeViewModel\nparticipant PokemonCardWidget\nparticipant SwipableDeckWidget\nparticipant DeckService\n\nUser -> main: Launch app\nmain -> AppView: Create application\nAppView -> StartupView: Initialize startup\nStartupView -> StartupViewModel: Execute startup logic\nStartupViewModel -> HomeView: Navigate to home screen\nHomeView -> HomeViewModel: Initialize home state\nHomeView -> DeckService: Retrieve initial deck\nHomeView -> SwipableDeckWidget: Display card deck\nUser -> SwipableDeckWidget: Swipe and interact with cards\nUser -> HomeViewModel: Interact with counter\nHomeViewModel -> DialogService: Show information dialog\nHomeViewModel -> BottomSheetService: Display notice sheet\n@enduml",
+  "state_management_flow": "Utilizes Stacked's BaseViewModel for reactive state management across view models like HomeViewModel and StartupViewModel. Implements a unidirectional data flow where view models handle state changes and automatically propagate updates to the UI. Reactive properties and methods manage dynamic state, with dependency injection through StackedLocator enabling centralized service management and lazy singleton registration of core application services.",
+  "navigation_flow": "Implements type-safe navigation using Stacked's routing system with compile-time route definitions in app.router.dart. Supports programmatic screen transitions via NavigationService, enabling push and replace methods. Primary navigation flow moves from StartupView to HomeView, with explicit route management ensuring navigation safety. Routing configuration provides a declarative and strongly-typed approach to managing application screens and transitions."
 }
