@@ -15,6 +15,7 @@ const Color kcPokemonAccentColor = Color(0xFFFFDE00); // Pokemon Yellow
 const Color kcPokemonBackgroundColor =
     Color(0xFF1E1E1E); // Dark theme background
 const Color kcPokemonCardBackground = Colors.white; // Card background color
+const Color kcResetButtonColor = Color(0xFF4CAF50); // Reset button color
 
 // Update background color to use Pokemon theme
 const Color kcBackgroundColor = kcPokemonBackgroundColor;

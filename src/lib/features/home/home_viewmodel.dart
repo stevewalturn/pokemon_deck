@@ -13,19 +13,40 @@ class HomeViewModel extends BaseViewModel {
   final _deckService = locator<DeckService>();
 
   List<PokemonCard> _pokemonCards = [];
+  String? _error;
 
   List<PokemonCard> get pokemonCards => _pokemonCards;
+  String? get modelError => _error;
 
   String get deckSizeLabel =>
       'Cards in deck: ${_pokemonCards.length}/${DeckConstants.standardDeckSize}';
+
+  bool get isDeckEmpty => _pokemonCards.isEmpty;
 
   HomeViewModel() {
     _loadInitialDeck();
   }
 
   void _loadInitialDeck() {
-    _pokemonCards = _deckService.getInitialDeck();
-    notifyListeners();
+    try {
+      _pokemonCards = _deckService.getInitialDeck();
+      _error = null;
+      notifyListeners();
+    } catch (e) {
+      _error = 'Failed to load deck. Please try again.';
+      notifyListeners();
+    }
+  }
+
+  void resetDeck() {
+    try {
+      _pokemonCards = _deckService.getInitialDeck();
+      _error = null;
+      notifyListeners();
+    } catch (e) {
+      _error = 'Failed to reset deck. Please try again.';
+      notifyListeners();
+    }
   }
 
   void onSwipeLeft(PokemonCard card) {
