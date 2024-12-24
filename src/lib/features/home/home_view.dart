@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:stacked/stacked.dart';
+import 'package:pokemon_deck/ui/common/app_colors.dart';
 
 import 'home_viewmodel.dart';
 
@@ -14,9 +15,14 @@ class HomeView extends StackedView<HomeViewModel> {
     Widget? child,
   ) {
     return Scaffold(
+      backgroundColor: kcPokemonBackgroundColor,
       appBar: AppBar(
-        title: const Text('Pokémon Deck Builder'),
+        title: const Text(
+          'Pokémon Deck Builder',
+          style: TextStyle(color: Colors.white),
+        ),
         centerTitle: true,
+        backgroundColor: kcPokemonPrimaryColor,
       ),
       body: SafeArea(
         child: Padding(
@@ -34,6 +40,7 @@ class HomeView extends StackedView<HomeViewModel> {
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.w900,
+                        color: Colors.white,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -43,15 +50,7 @@ class HomeView extends StackedView<HomeViewModel> {
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const Gap(25),
-                    MaterialButton(
-                      color: Colors.black,
-                      onPressed: viewModel.incrementCounter,
-                      child: Text(
-                        viewModel.counterLabel,
-                        style: const TextStyle(color: Colors.white),
+                        color: Colors.white,
                       ),
                     ),
                   ],
@@ -60,7 +59,7 @@ class HomeView extends StackedView<HomeViewModel> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     MaterialButton(
-                      color: Colors.blue,
+                      color: kcPokemonAccentColor,
                       onPressed: viewModel.showDialog,
                       child: const Text(
                         'Deck Rules',
@@ -70,7 +69,7 @@ class HomeView extends StackedView<HomeViewModel> {
                       ),
                     ),
                     MaterialButton(
-                      color: Colors.green,
+                      color: kcPokemonSecondaryColor,
                       onPressed: viewModel.showBottomSheet,
                       child: const Text(
                         'Card Limits',

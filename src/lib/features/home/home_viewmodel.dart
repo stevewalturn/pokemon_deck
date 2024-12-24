@@ -9,16 +9,8 @@ class HomeViewModel extends BaseViewModel {
   final _dialogService = locator<DialogService>();
   final _bottomSheetService = locator<BottomSheetService>();
 
-  String get counterLabel => 'Counter is: $_counter';
   String get deckSizeLabel =>
       'Standard deck size: ${DeckConstants.standardDeckSize} cards';
-
-  int _counter = 0;
-
-  void incrementCounter() {
-    _counter++;
-    rebuildUi();
-  }
 
   void showDialog() {
     _dialogService.showCustomDialog(
