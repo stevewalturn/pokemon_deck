@@ -3,6 +3,7 @@ import 'package:gap/gap.dart';
 import 'package:stacked/stacked.dart';
 import 'package:pokemon_deck/ui/common/app_colors.dart';
 import 'package:pokemon_deck/features/home/widgets/swipable_deck_widget.dart';
+import 'package:pokemon_deck/features/home/widgets/reset_button_widget.dart';
 
 import 'home_viewmodel.dart';
 
@@ -31,6 +32,14 @@ class HomeView extends StackedView<HomeViewModel> {
           child: Column(
             children: [
               const Gap(20),
+              if (viewModel.modelError != null)
+                Text(
+                  viewModel.modelError!,
+                  style: const TextStyle(
+                    color: Colors.red,
+                    fontSize: 16,
+                  ),
+                ),
               Text(
                 viewModel.deckSizeLabel,
                 style: const TextStyle(
@@ -41,10 +50,19 @@ class HomeView extends StackedView<HomeViewModel> {
               ),
               const Gap(20),
               Expanded(
-                child: SwipableDeckWidget(
-                  cards: viewModel.pokemonCards,
-                  onSwipeLeft: viewModel.onSwipeLeft,
-                  onSwipeRight: viewModel.onSwipeRight,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    SwipableDeckWidget(
+                      cards: viewModel.pokemonCards,
+                      onSwipeLeft: viewModel.onSwipeLeft,
+                      onSwipeRight: viewModel.onSwipeRight,
+                    ),
+                    if (viewModel.isDeckEmpty)
+                      ResetButtonWidget(
+                        onReset: viewModel.resetDeck,
+                      ),
+                  ],
                 ),
               ),
               const Gap(20),
